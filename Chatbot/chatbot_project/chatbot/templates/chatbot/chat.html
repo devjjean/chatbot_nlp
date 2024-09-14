@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(45deg, #111, #444); /* Efeito de luzes com gradiente */
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fonte atraente */
+        }
+        #chat-container {
+            width: 400px; /* Tamanho fixo para a caixa de conversa */
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Efeito de sombra mais forte */
+            display: flex;
+            flex-direction: column;
+            height: 500px; /* Altura fixa para a caixa de conversa */
+        }
+        #chatbox {
+            flex: 1;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            overflow-y: auto; /* Adiciona rolagem se necessário */
+            background-color: #111;
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+        }
+        input {
+            width: calc(100% - 110px);
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            margin: 10px;
+            box-sizing: border-box;
+            background: #222;
+            color: #fff;
+        }
+        button {
+            width: 100px;
+            padding: 12px;
+            border: none;
+            background-color: #555;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px; /* Tamanho da fonte ajustado */
+            font-weight: bold; /* Negrito para destaque */
+        }
+        button:hover {
+            background-color: #777;
+        }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            max-width: 100%; /* Largura máxima ajustada */
+        }
+        .user-message, .bot-response {
+            width: 48%; /* Largura ajustada para alinhar lado a lado */
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 14px; /* Tamanho da fonte ajustado */
+            line-height: 1.5; /* Melhor legibilidade */
+            word-wrap: break-word; /* Quebra de linha automática */
+        }
+        .user-message {
+            background: #007bff;
+            color: #fff;
+            align-self: flex-end;
+            text-align: right;
+            margin-left: auto; /* Alinha a mensagem do usuário à direita */
+        }
+        .bot-response {
+            background: #333;
+            color: #fff;
+            align-self: flex-start;
+            text-align: left;
+            margin-right: auto; /* Alinha a mensagem do bot à esquerda */
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chatbox"></div>
+        <input type="text" id="message" placeholder="Escreva sua mensagem aqui...">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const message = document.getElementById('message').value;
+
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `message=${encodeURIComponent(message)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const chatbox = document.getElementById('chatbox');
+                chatbox.innerHTML += `
+                    <div class="message user-message">
+                        <div class="message-content">
+                            <p>${message}</p>
+                        </div>
+                    </div>
+                    <div class="message bot-response">
+                        <div class="message-content">
+                            <p>${data.response}</p>
+                        </div>
+                    </div>
+                `;
+                chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll para o fim
+            });
+
+            document.getElementById('message').value = '';  // Limpa o campo de entrada
+        }
+    </script>
+</body>
+</html>
